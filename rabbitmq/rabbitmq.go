@@ -18,10 +18,12 @@ type Connection struct {
 // Channel wrap amqp.Connection.Channel, get a auto reconnect channel
 func (c *Connection) Channel(prefetch int) (*Channel, error) {
 	ch, err := c.Connection.Channel()
+
 	if err != nil {
 		return nil, err
 	}
 
+	ch.Qos(prefetch, 0, false)
 	channel := &Channel{
 		Channel: ch,
 	}
