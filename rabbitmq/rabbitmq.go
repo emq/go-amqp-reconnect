@@ -16,7 +16,7 @@ type Connection struct {
 }
 
 // Channel wrap amqp.Connection.Channel, get a auto reconnect channel
-func (c *Connection) Channel() (*Channel, error) {
+func (c *Connection) Channel(prefetch int) (*Channel, error) {
 	ch, err := c.Connection.Channel()
 	if err != nil {
 		return nil, err
@@ -43,8 +43,10 @@ func (c *Connection) Channel() (*Channel, error) {
 				time.Sleep(delay * time.Second)
 
 				ch, err := c.Connection.Channel()
+
 				if err == nil {
 					debug("channel recreate success")
+					ch.Qos(prefetch, 0, false)
 					channel.Channel = ch
 					break
 				}
